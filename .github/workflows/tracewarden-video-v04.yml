@@ -6,6 +6,11 @@ on:
       - main
     paths:
       - 'tmp/tracewarden_trigger.txt'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'tmp/tracewarden_trigger.txt'
 
 permissions:
   contents: write
@@ -44,6 +49,7 @@ jobs:
           retention-days: 1
 
       - name: Commit sample to repository
+        if: github.event_name == 'push'
         run: |
           cp /tmp/Tracewarden_video_muestra_v0.4_voz_natural.mp4 tmp/Tracewarden_video_muestra_v0.4_voz_natural.mp4
           git config user.name 'github-actions[bot]'
