@@ -1,0 +1,41 @@
+name: Tracewarden video v0.4
+
+on:
+  push:
+    branches:
+      - tracewarden-video-mix
+    paths:
+      - 'tmp/tracewarden_trigger.txt'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build approved visual
+        run: |
+          chmod +x tmp/build_tracewarden_v04.sh
+          tmp/build_tracewarden_v04.sh /tmp/twv04
+
+      - name: Download natural Spanish narration
+        run: |
+          curl -L --fail --retry 3 'https://resource2.heygen.ai/text_to_speech/194a8d209caa4c92bd6a63f97cf79180/28b2355d58af463680b01a76f0994400/id=063d9014-14fe-4bc2-b703-3fabc9a45c88.wav' -o /tmp/voice.wav
+          ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 /tmp/voice.wav
+
+      - name: Mix natural narration with visual
+        run: |
+          ffmpeg -hide_banner -loglevel error -y \
+            -i /tmp/twv04/visual.mp4 -i /tmp/voice.wav \
+            -filter_complex '[1:a]atempo=0.953[a]' \
+            -map 0:v:0 -map '[a]' \
+            -c:v copy -c:a aac -b:a 192k -shortest \
+            /tmp/Tracewarden_video_muestra_v0.4_voz_natural.mp4
+          ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 /tmp/Tracewarden_video_muestra_v0.4_voz_natural.mp4
+
+      - name: Upload sample
+        uses: actions/upload-artifact@v4
+        with:
+          name: tracewarden-video-v04-natural
+          path: /tmp/Tracewarden_video_muestra_v0.4_voz_natural.mp4
+          retention-days: 1
