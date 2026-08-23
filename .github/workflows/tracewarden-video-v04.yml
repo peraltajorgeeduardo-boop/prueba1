@@ -3,7 +3,7 @@ name: Tracewarden video v0.4
 on:
   push:
     branches:
-      - tracewarden-video-mix
+      - main
     paths:
       - 'tmp/tracewarden_trigger.txt'
 
@@ -43,7 +43,7 @@ jobs:
           path: /tmp/Tracewarden_video_muestra_v0.4_voz_natural.mp4
           retention-days: 1
 
-      - name: Commit sample to temporary branch
+      - name: Commit sample to repository
         run: |
           cp /tmp/Tracewarden_video_muestra_v0.4_voz_natural.mp4 tmp/Tracewarden_video_muestra_v0.4_voz_natural.mp4
           git config user.name 'github-actions[bot]'
