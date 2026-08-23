@@ -7,6 +7,9 @@ on:
     paths:
       - 'tmp/tracewarden_trigger.txt'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,9 +36,18 @@ jobs:
             /tmp/Tracewarden_video_muestra_v0.4_voz_natural.mp4
           ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 /tmp/Tracewarden_video_muestra_v0.4_voz_natural.mp4
 
-      - name: Upload sample
+      - name: Upload sample artifact
         uses: actions/upload-artifact@v4
         with:
           name: tracewarden-video-v04-natural
           path: /tmp/Tracewarden_video_muestra_v0.4_voz_natural.mp4
           retention-days: 1
+
+      - name: Commit sample to temporary branch
+        run: |
+          cp /tmp/Tracewarden_video_muestra_v0.4_voz_natural.mp4 tmp/Tracewarden_video_muestra_v0.4_voz_natural.mp4
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tmp/Tracewarden_video_muestra_v0.4_voz_natural.mp4
+          git commit -m 'Build Tracewarden v0.4 natural voice sample'
+          git push
